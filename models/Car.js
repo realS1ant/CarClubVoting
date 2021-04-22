@@ -18,6 +18,10 @@ const carSchema = new mongoose.Schema({
         require: false,
         default: "No Owner Specified."
     },
+    votes: {
+        type: Number,
+        default: 0
+    },
     created_at: {
         type: Date,
         default: Date.now

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLUH Car Club</title>
+</head>
+
+<body>
+    <% if (typeof error !='undefined' ) { %>
+        <h1 style="color: red;">
+            <%= error %>
+        </h1>
+        <br>
+        <% } %>
+            index, <% if (typeof user=='undefined' ) { %>
+                <a href="/login">
+                    login with google
+                </a>
+                <% } else { %>
+                    <%= user.name %>
+
+
+                        <% if (user.voted) { %>
+                            <h1>You have voted.</h1>
+
+                            <% } else { %>
+                                <h1>You haven't voted.</h1>
+                                <% } %>
+                                    <% }%>
+</body>
+
+</html>
