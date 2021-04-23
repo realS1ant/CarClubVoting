@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
         type: Object, // just the full car object
         required: false
     },
+    admin: {
+        type: Boolean,
+        default: false
+    },
     created_at: {
         type: Date,
         default: Date.now

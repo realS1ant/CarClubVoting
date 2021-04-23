@@ -1,21 +1,10 @@
 const router = require('express').Router();
 const { render } = require('ejs');
+const { isValidObjectId } = require('mongoose');
 const passport = require('passport');
+const Car = require('../models/Car');
+const { ensureLoggedIn, updateUser } = require('../utils');
 const carsRouter = require('./cars');
-
-function ensureLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
-    // if(req.session['user'] != undefined) {
-    //     next();
-    // } else {
-    //     console.log('Not logged in.');
-
-    // }
-}
 
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -35,6 +24,37 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
     res.redirect(req.session.redirect_to || '/');
     delete req.session.redirect_to;
     req.session.save();
+});
+
+router.get('/vote/:carId', ensureLoggedIn, async (req, res, next) => {
+    const { carId } = req.params;
+    if (!carId || !isValidObjectId(carId)) {
+        console.log('asd')
+        res.status(400).json({
+            success: false,
+            error: 'Invalid Car ID'
+        });
+        return;
+    }
+    const user = await updateUser(req);
+    if (!user.voted) {
+        const car = await Car.findById(carId);
+        if (!car) {
+            req.session['error'] = 'Incorrect Car ID';
+            res.redirect('/');
+            return;
+        }
+        user.voted = car; //I've come to the conclusion that we don't want to store actual objects and just the ID because the car obj could get updated
+        //Update: I was worried about having old references of the object, but I just switched it to pull a new object based on the id every time it loads the index page.
+        user.save();
+        car.votes += 1;
+        car.save();
+    } else {
+        req.session['error'] = 'You already voted!';
+        res.redirect('/');
+        return;
+    }
+    res.redirect(`/car/${carId}`);
 });
 
 router.use('/cars', carsRouter);

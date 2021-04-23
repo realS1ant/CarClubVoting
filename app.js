@@ -16,7 +16,8 @@ require('dotenv').config();
 
 mongoose.connect(process.env.MONGOURI, {
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useFindAndModify: false
 }, err => {
     if (err) console.log(err);
     else console.log('Mongoose Connected.');
@@ -57,8 +58,12 @@ passport.use('google', new GoogleStrategy(
             return;
         }
         try {
-            const user = User.findOne({ googleID: profile.id }).exec();
-            if (!(typeof user == 'undefined')) {
+            const user = await User.findOne({ googleID: profile.id }).exec();
+            if (user) {
+                //Found db user
+                console.log(`Found db user: ${user.name}`);
+                done(null, user);
+            } else {
                 //No user in database
                 console.log('new user: ' + profile._json.name);
                 const createdUser = await new User({
@@ -69,10 +74,6 @@ passport.use('google', new GoogleStrategy(
                 }).save();
                 done(null, createdUser);
                 return;
-            } else {
-                //Found db user
-                console.log(`Found db user: ${user.name}`);
-                done(null, user);
             }
         } catch (e) {
             if (e) {
@@ -89,7 +90,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => done(null, user));
+    User.findById(id).then(user => done(null, user.toJSON()));
 });
 
 app.use('/api', apiRouter);

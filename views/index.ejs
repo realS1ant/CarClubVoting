@@ -17,17 +17,16 @@
         <% } %>
             index, <% if (typeof user=='undefined' ) { %>
                 <a href="/login">
-                    login with google
+                    Login
                 </a>
                 <% } else { %>
                     <%= user.name %>
-
-
-                        <% if (user.voted) { %>
-                            <h1>You have voted.</h1>
-
+                        <% if (typeof user.voted !='undefined' ) { %>
+                            <h1>You have voted for <%= user.voted.owner %>'s <%= user.voted.year %>
+                                        <%= user.voted.make %>
+                                            <%= user.voted.model %>.</h1>
                             <% } else { %>
-                                <h1>You haven't voted.</h1>
+                                <h1>You haven't voted yet.</h1>
                                 <% } %>
                                     <% }%>
 </body>

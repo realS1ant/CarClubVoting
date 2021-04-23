@@ -34,8 +34,8 @@
             </h3>
             <% if (typeof user !='undefined' ) { %>
                 <% if (!user.voted) { %>
-                    <h2><a href="/vote/<%= car.id %> ">Vote for this car!</a></h2>
-                    <% } else if(user.voted && user.voted['id']==car.id) { %>
+                    <h2><a href="/api/vote/<%= car._id %>">Vote for this car!</a></h2>
+                    <% } else if(user.voted && user.voted['_id']==car._id) { %>
                         <h2>You voted for me!</h2>
                         <% } %>
                             <% } else { %>
