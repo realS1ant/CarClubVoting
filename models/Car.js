@@ -13,10 +13,13 @@ const carSchema = new mongoose.Schema({
         type: Number,
         require: true
     },
+    searchPhrase: {
+        type: String,
+        require: false
+    },
     owner: {
         type: String,
-        require: false,
-        default: "No Owner Specified."
+        require: true
     },
     votes: {
         type: Number,

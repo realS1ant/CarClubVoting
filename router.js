@@ -32,13 +32,18 @@ router.get('/logout', ensureLoggedIn, (req, res) => {
     res.redirect('/');
 });
 
-router.get('/car/:id', async (req, res) => {
-    const { id } = req.params;
-    if (!isValidObjectId(id)) {
-        res.render('car.ejs', { user: req.user, error: 'Can\'t find that car!' });
+router.get('/car/:query', async (req, res) => {
+    const { query } = req.params;
+    if (!query) {
+        res.render('car.ejs', { user: req.user, error: 'Invalid URL.' });
         return;
     }
-    const car = await Car.findById(id);
+    let car;
+    if (isValidObjectId(query)) {
+        car = await Car.findById(query);
+    } else {
+        car = await Car.findOne({ searchPhrase: query.toLowerCase() });
+    }
     if (car) {
         let carobj = car.toObject();
         delete carobj['votes']; //so we don't expose the **super secret** votes to our lovely users

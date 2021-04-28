@@ -5,6 +5,7 @@ const passport = require('passport');
 const Car = require('../models/Car');
 const { ensureLoggedIn, updateUser } = require('../utils');
 const carsRouter = require('./cars');
+const { adminApiRouter } = require('../adminRouter');
 
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -58,6 +59,8 @@ router.get('/vote/:carId', ensureLoggedIn, async (req, res, next) => {
 });
 
 router.use('/cars', carsRouter);
+router.use('/admin', adminApiRouter);
+
 
 //Error: next({ status: 420 });
 

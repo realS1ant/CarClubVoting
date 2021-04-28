@@ -11,6 +11,7 @@ const MongoStore = require('connect-mongo')(session);
 const fetch = require('node-fetch');
 const User = require('./models/User.js');
 const apiRouter = require('./api/api.js');
+const { adminRouter } = require('./adminRouter.js');
 const router = require('./router.js');
 require('dotenv').config();
 
@@ -94,6 +95,7 @@ passport.deserializeUser((id, done) => {
 });
 
 app.use('/api', apiRouter);
+app.use('/admin', adminRouter);
 app.use('/', router);
 
 //Not Found - 404

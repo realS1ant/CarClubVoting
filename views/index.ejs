@@ -2,33 +2,57 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLUH Car Club</title>
+    <%- include('head.ejs') %>
+        <title>SLUH Car Club</title>
 </head>
 
 <body>
+    <h1 class="header">SLUH Car Club</h1>
+
+
     <% if (typeof error !='undefined' ) { %>
         <h1 style="color: red;">
             <%= error %>
         </h1>
         <br>
         <% } %>
-            index, <% if (typeof user=='undefined' ) { %>
-                <a href="/login">
-                    Login
-                </a>
+            <% if (typeof user=='undefined' ) { %>
+                <!-- user isn't logged in -->
+                <div class="login-content">
+                    <h1>Login</h1>
+                    <a href="/api/auth/google">
+                        <div class="login-button">
+                            <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                        </div>
+                    </a>
+                </div>
                 <% } else { %>
-                    <%= user.name %>
+                    <!-- user is logged in -->
+                    <div class="content">
                         <% if (typeof user.voted !='undefined' ) { %>
-                            <h1>You have voted for <%= user.voted.owner %>'s <%= user.voted.year %>
-                                        <%= user.voted.make %>
-                                            <%= user.voted.model %>.</h1>
-                            <% } else { %>
-                                <h1>You haven't voted yet.</h1>
-                                <% } %>
-                                    <% }%>
+                            <!-- user has already voted -->
+                            <h2>You have voted for:</h2>
+                            <h1>
+                                <%= user.voted.owner %>'s
+                            </h1>
+                            <h2>
+                                <%= user.voted.year %>
+                                    <%= user.voted.make %>
+                                        <%= user.voted.model %>
+                                            </h1>
+                                            <% } else { %>
+                                                <!-- user hasn't voted yet. -->
+                                                <h1>You haven't voted yet.</h1>
+                                                <% } %>
+                    </div>
+                    <% }%>
+                        <div class="footer">
+                            <div class="socials">
+                                <a href="http://twitter.com/" class="fab fa-twitter twitter"></a>
+                                <h1>Socials</h1>
+                                <a href="http://twitter.com/" class="fab fa-instagram instagram"></a>
+                            </div>
+                        </div>
 </body>
 
 </html>

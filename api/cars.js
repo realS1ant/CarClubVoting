@@ -2,57 +2,130 @@ const router = require('express').Router();
 const { isValidObjectId } = require('mongoose');
 const Car = require('../models/Car.js');
 
+// router.use((req, res, next) => {
+//     if (req.isAuthenticated() && req.user['admin']) {
+//         next();
+//     } else {
+//         res.status(401);
+//     }
+// });
+
 //Create a car obj
 router.post('/', async (req, res, next) => {
-    const { make, model, year, owner } = req.body;
+    const { make, model, year, owner, searchPhrase } = req.body;
     if (!(make && model && year && owner)) {
         res.status(400).json({ message: "Invalid Input(make, model, year, and owner)." });
         return;
     }
 
-    const car = await new Car({
-        make,
-        model,
-        year,
-        owner
-    }).save();
-    res.status(201).json({ car });
+    if (searchPhrase) {
+        const car = await Car.findOne({ searchPhrase: searchPhrase.toLowerCase() }).exec();
+        if (car) {
+            res.status(409).json({
+                success: false,
+                message: 'Search Phrase already in use!'
+            });
+            return;
+        } else {
+            const newCar = await new Car({
+                make,
+                model,
+                year,
+                owner,
+                searchPhrase: searchPhrase.toLowerCase()
+            }).save();
+            res.status(201).json({ success: true, car: newCar });
+        }
+    } else {
+        const car = await new Car({
+            make,
+            model,
+            year,
+            owner,
+        }).save();
+        res.status(201).json({ success: true, car });
+        return;
+    }
 });
 
 //Get Car by id
-router.get('/:carId', async (req, res, next) => {
-    const { carId } = req.params;
+router.get('/:query', async (req, res, next) => {
+    const { query } = req.params;
 
-    if (!carId || !isValidObjectId(carId)) {
+    if (!query) {
         res.status(400).json({
             success: false,
-            message: 'Invalid Car Id',
+            message: 'Invalid Query',
             car: {}
         });
-        return;
     }
 
-    const car = await Car.findById(carId).exec();
-    if (car) {
-        res.status(200).json({
-            success: true,
-            car
-        });
+    // if (!carId || !isValidObjectId(query)) {
+    //     res.status(400).json({
+    //         success: false,
+    //         message: 'Invalid Car Id',
+    //         car: {}
+    //     });
+    //     return;
+    // }
+
+    if (isValidObjectId(query)) {
+        try {
+            const car = await Car.findById(query).exec();
+            if (car) {
+                res.status(200).json({
+                    success: true,
+                    car
+                });
+            } else {
+                //204 no content
+                res.status(204).json({
+                    success: false,
+                    message: 'No car found'
+                });
+            }
+            return;
+        } catch (e) {
+            console.log('Error fetching car by ID: ' + query);
+            res.status(500).json({
+                success: false,
+                message: 'Internal Error'
+            });
+            return;
+        }
     } else {
-        //204 no content
-        res.status(204).json({
-            success: false,
-            message: 'No car found'
-        });
+        try {
+            const car = await Car.findOne({ searchPhrase: query.toLowerCase() }).exec();
+            if (car) {
+                res.status(200).json({
+                    success: true,
+                    car
+                });
+            } else {
+                //204 no content
+                res.status(204).json({
+                    success: false,
+                    message: 'No car found'
+                });
+            }
+            return;
+        } catch (e) {
+            console.log('Error fetching car by ID: ' + query);
+            res.status(500).json({
+                success: false,
+                message: 'Internal Error'
+            });
+            return;
+        }
     }
 });
 
 //Update Car
-router.put('/:carId', async (req, res, next) => {
-    const { carId } = req.params;
-    const { make, model, year, owner, votes } = req.body;
+router.put('/:query', async (req, res, next) => {
+    const { query } = req.params;
+    const { make, model, year, owner, votes, searchPhrase } = req.body;
 
-    if (!carId || !(make || model || year || owner || votes) || !isValidObjectId(carId)) {
+    if (!query || !(make || model || year || owner || votes || searchPhrase)) {
         res.status(400).json({
             success: false,
             message: 'Invalid Car Id or body'
@@ -60,55 +133,82 @@ router.put('/:carId', async (req, res, next) => {
         return;
     }
 
-    const car = await Car.findByIdAndUpdate(carId, req.body);
+    if (isValidObjectId(query)) {
+        const car = await Car.findByIdAndUpdate(query, req.body);
 
-    if (car == null) {
-        res.status(400).json({
-            success: false,
-            message: 'Incorrect Car Id'
+        if (car == null) {
+            res.status(400).json({
+                success: false,
+                message: 'Incorrect Car Id'
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            car
+        });
+        return;
+    } else {
+        const car = await Car.findOneAndUpdate({ searchPhrase: query.toLowerCase() }, req.body);
+
+        if (car == null) {
+            res.status(400).json({
+                success: false,
+                message: 'Incorrect Car Id'
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            car
         });
         return;
     }
-
-    res.status(200).json({
-        success: true,
-        car
-    });
-    // const car = await Car.findById(carId);
-
-    // car['make'] = make || car['make'];
-    // car['model'] = model || car['model'];
-    // car['year'] = year || car['year'];
-    // car['owner'] = owner || car['owner'];
-    // car['votes'] = votes || car['votes'];
-
-    // car.update();
 });
 
-router.delete('/:carId', async (req, res, next) => {
-    const { carId } = req.params;
+router.delete('/:query', async (req, res, next) => {
+    const { query } = req.params;
 
-    if (!carId || !isValidObjectId(carId)) {
+    if (!query) {
         res.status(400).json({
             success: false,
-            message: 'Invalid Car Id'
+            message: 'Invalid Query'
         });
         return;
     }
-
-    const car = await Car.findByIdAndRemove(carId);
-    if (car == null) {
-        //Car not found
-        res.status(204).json({
-            success: false,
-            message: 'No car found'
+    if (isValidObjectId(query)) {
+        const car = await Car.findByIdAndRemove(query);
+        if (car == null) {
+            //Car not found
+            res.status(204).json({
+                success: false,
+                message: 'No car found'
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            car
+        });
+        return;
+    } else {
+        const car = await Car.findOneAndRemove({ searchPhrase: query.toLowerCase() });
+        if (car == null) {
+            //Car not found
+            res.status(204).json({
+                success: false,
+                message: 'No car found'
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            car
         });
         return;
     }
-    res.status(200).json({
-        success: true,
-        car
-    });
 });
 
 module.exports = router;
