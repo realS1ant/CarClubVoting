@@ -9,19 +9,18 @@
 <body>
     <h1 class="header">SLUH Car Club</h1>
 
-
     <% if (typeof error !='undefined' ) { %>
-        <h1 style="color: red;">
+        <h1 style="color: red; margin-top: 0.5rem;">
             <%= error %>
         </h1>
         <br>
         <% } %>
             <% if (typeof user=='undefined' ) { %>
                 <!-- user isn't logged in -->
-                <div class="login-content">
+                <div class="content">
                     <h1>Login</h1>
-                    <a href="/api/auth/google">
-                        <div class="login-button">
+                    <a href="/api/auth/google" class="login">
+                        <div class="icon-button">
                             <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
                         </div>
                     </a>
@@ -43,16 +42,11 @@
                                             <% } else { %>
                                                 <!-- user hasn't voted yet. -->
                                                 <h1>You haven't voted yet.</h1>
+                                                <h1>Go scan a QR code!</h1>
                                                 <% } %>
                     </div>
                     <% }%>
-                        <div class="footer">
-                            <div class="socials">
-                                <a href="http://twitter.com/" class="fab fa-twitter twitter"></a>
-                                <h1>Socials</h1>
-                                <a href="http://twitter.com/" class="fab fa-instagram instagram"></a>
-                            </div>
-                        </div>
+                        <%- include('footer.ejs') %>
 </body>
 
 </html>

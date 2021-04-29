@@ -1,3 +1,25 @@
-<h1>
-    Error: <%= errorCode %>
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../head.ejs') %>
+        <title>SLUH Car Club - <%= error.code %>
+        </title>
+</head>
+
+<body>
+    <h1 class="header">SLUH Car Club</h1>
+    <div class="content">
+        <h1 style="color: #f00; font-weight: 800;">
+            <%= error.code %> Error
+        </h1>
+        <a href="/" class="login">
+            <div class="icon-button" style="margin-top: 0.75rem;">
+                <i class="fa fa-home"></i> <span style="font-size: 22px;">Home</span>
+            </div>
+        </a>
+    </div>
+    <%- include('../footer.ejs') %>
+</body>
+
+</html>

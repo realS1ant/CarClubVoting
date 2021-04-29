@@ -7,6 +7,12 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
     if (req.session['error']) {
+        if (!req.user) {
+            res.render('index.ejs', { user: req.user, error: req.session.error });
+            delete req.session['error'];
+            req.session.save();
+            return;
+        }
         if (req.user.voted) {
             req.user.voted = await Car.findById(req.user.voted._id);
         }

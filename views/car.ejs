@@ -2,58 +2,65 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% if (typeof car !='undefined' ) { %>
-        <title>
-            <%= car.owner %>'s Car
-        </title>
-        <% } else {%>
+    <%- include('head.ejs') %>
+        <% if (typeof car !='undefined' ) { %>
             <title>
-                Car Not Found
+                <%= car.owner %>'s Car
             </title>
-            <% } %>
+            <% } else {%>
+                <title>
+                    Car Not Found
+                </title>
+                <% } %>
 </head>
 
 <body>
+    <h1 class="header">SLUH Car Club</h1>
     <% if (typeof error !='undefined' ) { %>
-        <h1 style='color: red;'>
+        <h1 style='color: red; margin-top: 0.5rem;'>
             <%= error %>
         </h1>
         <% } else {%>
-            <h1>
-                <%= car.owner %>'s Car
-            </h1>
-            <h3>
-                <%= car.year %>
+            <div class="car-content content">
+                <h1>
+                    <%= car.owner %>'s
+                </h1>
+                <h2>
+                    <%= car.year %>
+                        <%= car.make %>
+                            <%= car.model %>
+                </h2>
+            </div>
+            <div class="vote-content content">
+                <% if (typeof user=='undefined' ) { %>
+                    <% console.log('novte') %>
+                        <!-- User isn't logged in. -->
+                        <a href="/api/auth/google?redirect_to=%2Fcar%2F<%= car._id.toString() %>" class="login">
+                            <div class="icon-button">
+                                <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                            </div>
+                        </a>
+                        <% } else if (!user.voted) { %>
+                            <% console.log('das') %>
+                                <!-- User hasn't voted yet. -->
+                                <a href="/api/vote/<%= car._id %>" class="login">
+                                    <div class="icon-button">
+                                        <i class="fa fa-check-square"></i> <span style="font-size: 22px;">Vote For
+                                            Me</span>
+                                    </div>
+                                </a>
+                                <% } else if (user.voted && user.voted['_id']==car._id.toString()) { %>
+                                    <% console.log('me') %>
+                                        <!-- User has already voted for this car. -->
+                                        <h2>You voted for me!</h2>
+                                        <% } else if (user.voted) {%>
+                                            <% console.log('otha') %>
+                                                <h2>You already voted for another car!</h2>
+                                                <% } %>
+            </div>
 
-                    <%= car.make %>
-
-                        <%= car.model %>
-            </h3>
-            <% if (typeof user !='undefined' ) { %>
-                <% if (!user.voted) { %>
-                    <!-- User hasn't voted yet. -->
-                    <h2><a href="/api/vote/<%= car._id %>">Vote for this car!</a></h2>
-                    <% } else if(user.voted && user.voted['_id']==car._id.toString()) { %>
-                        <!-- User has already voted for this car. -->
-                        <h2>You voted for me!</h2>
-                        <% } else if(user.voted) { %>
-                            <!-- User has already voted, just not for this car. -->
-                            <h2>You didn't vote for me!</h2>
-                            <% } %>
-                                <!-- undefined check -->
-                                <% } else { %>
-                                    <!-- User isn't logged in. -->
-                                    <a href="/api/auth/google?redirect_to=%2Fcar%2F<%= car._id.toString() %>">Login
-                                        with
-                                        google
-                                        to
-                                        vote</a>
-                                    <% } %>
-                                        <!-- not undefined check -->
-                                        <% } %>
+            <% } %>
+                <%- include('footer.ejs') %>
 </body>
 
 </html>

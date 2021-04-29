@@ -2,14 +2,20 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLUH Car Club</title>
+    <%- include('head.ejs') %>
+        <title>SLUH Car Club</title>
 </head>
 
 <body>
-    login <a href="/api/auth/google">Login with google</a>
+    <h1 class="header">SLUH Car Club</h1>
+    <div class="content">
+        <a href="/api/auth/google" class="login">
+            <div class="icon-button">
+                <i class="fab fa-google"></i> <span>Login With Google</span>
+            </div>
+        </a>
+    </div>
+    <%- include('footer.ejs') %>
 </body>
 
 </html>
