@@ -26,7 +26,7 @@ body {
 .content {
     font-weight: 500;
     margin: 150px auto 0 auto;
-    width: 95%;
+    width: 85%;
 }
 
 @media only screen and (min-width: 380px) {
@@ -103,6 +103,7 @@ a.login {
     margin: 5px auto;
     text-decoration: none;
     background-color: #EA4335;
+    cursor: pointer;
 }
 
 .icon-button span, i {
@@ -137,4 +138,38 @@ a.login {
 
 .vote-content a {
     text-decoration: none;
+}
+
+.admin-content {
+    width: 90%;
+    margin: 2rem auto;
+}
+
+.admin-content h1 {
+    margin-bottom: 3rem;
+}
+
+.admin-btn {
+    margin: 1rem 0px;
+}
+
+.admin-content input {
+    border-radius: 50px;
+    /* border: 3px solid #EA4335; */
+    color: black;
+    /* width: 340px; */
+    width: 95%;
+    padding: 10px;
+    margin: 2px auto;
+    background-color: white;
+    font-size: 26px;
+    font-weight: 500;
+}
+
+.admin-content input:focus {
+    border: 3px solid #EA4335;
+}
+
+.admin-content input:focus-visible {
+    outline: none;
 }

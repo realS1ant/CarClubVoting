@@ -14,7 +14,8 @@ const Car = require('../models/Car.js');
 router.post('/', async (req, res, next) => {
     const { make, model, year, owner, searchPhrase } = req.body;
     if (!(make && model && year && owner)) {
-        res.status(400).json({ message: "Invalid Input(make, model, year, and owner)." });
+        console.log(req.body);
+        res.status(400).json({ success: false, message: "Invalid Input(make, model, year, and owner)." });
         return;
     }
 
@@ -34,7 +35,7 @@ router.post('/', async (req, res, next) => {
                 owner,
                 searchPhrase: searchPhrase.toLowerCase()
             }).save();
-            res.status(201).json({ success: true, car: newCar });
+            res.status(201).json({ success: true, message: 'Car successfully created.', car: newCar });
         }
     } else {
         const car = await new Car({
@@ -43,9 +44,25 @@ router.post('/', async (req, res, next) => {
             year,
             owner,
         }).save();
-        res.status(201).json({ success: true, car });
+        res.status(201).json({ success: true, message: 'Car successfully created.', car });
         return;
     }
+});
+
+router.get('/highestvotes', async (req, res, next) => {
+    if (!(req.isAuthenticated() && req.user['admin'])) {
+        res.status(401).json({
+            message: 'Unauthorized'
+        });
+        return;
+    }
+
+    const votes = (await Car.find().sort({ 'votes': -1 }).limit(1))[0].votes; //find the number for the votes.
+    const cars = await Car.find({ votes });
+    res.status(200).json({
+        votes,
+        cars
+    });
 });
 
 //Get Car by id

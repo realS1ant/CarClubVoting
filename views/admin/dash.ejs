@@ -2,14 +2,30 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLUH Car Club Admin Dashboard</title>
+    <%- include('../head.ejs') %>
+        <title>SLUH Car Club Admin</title>
 </head>
 
 <body>
-    <h1>admin dashboard</h1>
+    <h1 class="header">SLUH Car Club</h1>
+    <div class="admin-content content">
+        <h1>Admin Dashboard</h1>
+
+        <h3 style="font-weight: 700;" id="car-create-msg"></h3>
+        <input type="text" name="owner" id="owner-in" placeholder="John Doe" />
+        <input type="number" name="year" id="year-in" placeholder="1908" />
+        <input type="text" name="make" id="make-in" placeholder="Ford" />
+        <input type="text" name="model" id="model-in" placeholder="Model T" />
+        <input type="text" name="searchphrase" id="searchphrase-in" placeholder="Search Phrase" />
+        <div class="icon-button admin-btn" id="car-create-btn">
+            <i class="fa fa-car-side"></i> <span>Create Car</span>
+        </div>
+        <div class="icon-button admin-btn" id="votes-btn">
+            <i class="fa fa-list-ul"></i> <span>Top Votes</span>
+        </div>
+        <div id="data"></div>
+        <script src="script.js"></script>
+    </div>
 </body>
 
 </html>
