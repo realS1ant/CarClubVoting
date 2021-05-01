@@ -41,7 +41,8 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
-    res.render('login.ejs');
+    if (req.isAuthenticated()) res.redirect('/')
+    else res.render('login.ejs');
 });
 
 router.get('/logout', ensureLoggedIn, (req, res) => {
