@@ -30,7 +30,6 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 router.get('/vote/:carId', ensureLoggedIn, async (req, res, next) => {
     const { carId } = req.params;
     if (!carId || !isValidObjectId(carId)) {
-        console.log('asd')
         res.status(400).json({
             success: false,
             error: 'Invalid Car ID'

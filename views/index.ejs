@@ -16,39 +16,37 @@
         <br>
         <% } %>
             <% if (typeof user=='undefined' ) { %>
-                <% console.log('d') %>
-                    <!-- user isn't logged in -->
+                <!-- user isn't logged in -->
+                <div class="content">
+                    <h1>Login</h1>
+                    <a href="/api/auth/google" class="login">
+                        <div class="icon-button">
+                            <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                        </div>
+                    </a>
+                </div>
+                <% } else { %>
+                    <!-- user is logged in -->
                     <div class="content">
-                        <h1>Login</h1>
-                        <a href="/api/auth/google" class="login">
-                            <div class="icon-button">
-                                <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
-                            </div>
-                        </a>
+                        <% if (typeof user.voted !='undefined' ) { %>
+                            <!-- user has already voted -->
+                            <h2>You have voted for:</h2>
+                            <h1>
+                                <%= user.voted.owner %>'s
+                            </h1>
+                            <h2>
+                                <%= user.voted.year %>
+                                    <%= user.voted.make %>
+                                        <%= user.voted.model %>
+                                            </h1>
+                                            <% } else { %>
+                                                <!-- user hasn't voted yet. -->
+                                                <h1>You haven't voted yet.</h1>
+                                                <h1>Go scan a QR code!</h1>
+                                                <% } %>
                     </div>
-                    <% } else { %>
-                        <% console.log('d') %>
-                            <!-- user is logged in -->
-                            <div class="content">
-                                <% if (typeof user.voted !='undefined' ) { %>
-                                    <!-- user has already voted -->
-                                    <h2>You have voted for:</h2>
-                                    <h1>
-                                        <%= user.voted.owner %>'s
-                                    </h1>
-                                    <h2>
-                                        <%= user.voted.year %>
-                                            <%= user.voted.make %>
-                                                <%= user.voted.model %>
-                                                    </h1>
-                                                    <% } else { %>
-                                                        <!-- user hasn't voted yet. -->
-                                                        <h1>You haven't voted yet.</h1>
-                                                        <h1>Go scan a QR code!</h1>
-                                                        <% } %>
-                            </div>
-                            <% }%>
-                                <%- include('footer.ejs') %>
+                    <% }%>
+                        <%- include('footer.ejs') %>
 </body>
 
 </html>

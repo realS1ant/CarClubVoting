@@ -26,21 +26,17 @@ router.get('/', async (req, res, next) => {
         delete req.session['error'];
         req.session.save();
     } else {
-        console.log('sAD')
         if (req.isAuthenticated() && req.user.voted) {
-            console.log('ooasd')
             const car = await Car.findById(req.user.voted._id);
-            console.log('yopoo')
             if (car) {
                 console.log(car);
                 req.user.voted = car;
                 await User.findByIdAndUpdate(req.user._id, req.user);
             } else {
-                console.log('none of that')
                 delete req.user.voted;
                 await User.findByIdAndUpdate(req.user._id, req.user);
             }
-        } else console.log('no auth?' + req.isAuthenticated() + ' ' + req.user.voted);
+        }
         res.render('index.ejs', { user: req.user });
     }
 });
