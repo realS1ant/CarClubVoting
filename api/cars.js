@@ -1,3 +1,6 @@
+const qrcode = require('qrcode');
+const PDFKit = require('pdfkit');
+const fs = require('fs');
 const router = require('express').Router();
 const { isValidObjectId } = require('mongoose');
 const Car = require('../models/Car.js');
@@ -226,6 +229,62 @@ router.delete('/:query', async (req, res, next) => {
         });
         return;
     }
+});
+
+router.get('/qrcode/:query', async (req, res, next) => {
+    const { query } = req.params;
+
+    if (!query) {
+        res.status(400).json({
+            success: false,
+            message: 'Invalid Query'
+        });
+        return;
+    }
+    let car;
+    if (isValidObjectId(query)) {
+        car = await Car.findById(query);
+    } else {
+        car = await Car.findOne({ searchPhrase: query });
+    }
+
+    if (!car) {
+        res.send(500);
+        return null;
+    }
+
+    const qr = await qrcode.toFile(`qrcodes/${query}.png`, `${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${query}`)
+
+    let pdf = new PDFKit({ bufferPages: true });
+
+    let buffers = [];
+    pdf.on('data', buffers.push.bind(buffers));
+    pdf.on('end', () => {
+        let pdfData = Buffer.concat(buffers);
+        res.writeHead(200, {
+            'Content-Length': Buffer.byteLength(pdfData),
+            'Content-Type': 'application/pdf',
+            'Content-disposition': 'attachment;filename=test.pdf'
+        }).end(pdfData);
+    });
+    // pdf.pipe(fs.createWriteStream(`qrcodes/${query}.pdf`));
+    pdf.fontSize(36).text(`${car.owner}'s`, pdf.x, pdf.y, {
+        align: 'center'
+    });
+    pdf.fontSize(30).text(`${car.year} ${car.make} ${car.model}`, pdf.x, pdf.y, {
+        align: 'center'
+    });
+    pdf.image(`qrcodes/${query}.png`, (pdf.page.width - 164) / 2, pdf.y, {
+        fit: [164, 164]
+    });
+    pdf.fontSize(8).text(`${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${query}`, pdf.x, pdf.y, {
+        align: 'center'
+    });
+    pdf.end();
+
+    fs.unlink(`qrcodes/${query}.png`, err => {
+        if (err) console.error(err);
+    });
 });
 
 module.exports = router;

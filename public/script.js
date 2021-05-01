@@ -34,9 +34,6 @@ carCreateBtn.onclick = async () => {
     }
 
     if (searchPhrase) {
-        console.log('fetching')
-        console.log({ make, model, year, owner, searchPhrase })
-
         let res = await fetch('/api/cars', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -47,8 +44,49 @@ carCreateBtn.onclick = async () => {
         carMsg.style.color = res.success ? '' : 'red';
         carMsg.innerText = res.message;
 
-        //GEN QR HERE.
-    } else {
+        document.getElementById('owner-in').value = '';
+        document.getElementById('make-in').value = '';
+        document.getElementById('model-in').value = '';
+        document.getElementById('year-in').value = '';
+        document.getElementById('searchphrase-in').value = '';
 
+        generateQRCode(searchPhrase);
+    } else {
+        let res = await fetch('/api/cars', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',
+            body: JSON.stringify({ make, model, year, owner })
+        }).then(res => res.json());
+
+        carMsg.style.color = res.success ? '' : 'red';
+        carMsg.innerText = res.message;
+
+        document.getElementById('owner-in').value = '';
+        document.getElementById('make-in').value = '';
+        document.getElementById('model-in').value = '';
+        document.getElementById('year-in').value = '';
+        document.getElementById('searchphrase-in').value = '';
+
+        generateQRCode(res.car._id)
     }
 };
+
+async function generateQRCode(query) {
+    let res = await fetch(`/api/cars/qrcode/${query}`).then(res => {
+        if (res.status == 500) {
+            return;
+        } else return res.blob();
+    });
+
+    let pdf = new File([res], `${query}.pdf`);
+
+    let a = document.createElement('a');
+    a.style.display = 'none';
+    a.setAttribute('href', URL.createObjectURL(pdf));
+    a.setAttribute('download', `${query}.pdf`);
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
