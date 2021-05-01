@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
     if (req.session['error']) {
-        if (!req.user) {
+        if (!req.isAuthenticated()) {
             res.render('index.ejs', { user: req.user, error: req.session.error });
             delete req.session['error'];
             req.session.save();
@@ -15,16 +15,32 @@ router.get('/', async (req, res, next) => {
         }
         if (req.user.voted) {
             req.user.voted = await Car.findById(req.user.voted._id);
+            if (car) {
+                req.user.voted = car;
+            } else {
+                delete req.user.voted;
+                await User.findByIdAndUpdate(req.user._id, req.user);
+            }
         }
         res.render('index.ejs', { user: req.user, error: req.session.error });
         delete req.session['error'];
         req.session.save();
     } else {
-        if (req.user && req.user.voted) {
+        console.log('sAD')
+        if (req.isAuthenticated() && req.user.voted) {
+            console.log('ooasd')
             const car = await Car.findById(req.user.voted._id);
-            req.user.voted = car;
-            await User.findByIdAndUpdate(req.user._id, req.user);
-        }
+            console.log('yopoo')
+            if (car) {
+                console.log(car);
+                req.user.voted = car;
+                await User.findByIdAndUpdate(req.user._id, req.user);
+            } else {
+                console.log('none of that')
+                delete req.user.voted;
+                await User.findByIdAndUpdate(req.user._id, req.user);
+            }
+        } else console.log('no auth?' + req.isAuthenticated() + ' ' + req.user.voted);
         res.render('index.ejs', { user: req.user });
     }
 });

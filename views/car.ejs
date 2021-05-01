@@ -33,30 +33,27 @@
             </div>
             <div class="vote-content content">
                 <% if (typeof user=='undefined' ) { %>
-                    <% console.log('novte') %>
-                        <!-- User isn't logged in. -->
-                        <a href="/api/auth/google?redirect_to=%2Fcar%2F<%= car._id.toString() %>" class="login">
+                    <!-- User isn't logged in. -->
+                    <a href="/api/auth/google?redirect_to=%2Fcar%2F<%= car._id.toString() %>" class="login">
+                        <div class="icon-button">
+                            <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                        </div>
+                    </a>
+                    <% } else if (!user.voted) { %>
+                        <!-- User hasn't voted yet. -->
+                        <a href="/api/vote/<%= car._id %>" class="login">
                             <div class="icon-button">
-                                <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                                <i class="fa fa-check-square"></i> <span style="font-size: 22px;">Vote For
+                                    Me</span>
                             </div>
                         </a>
-                        <% } else if (!user.voted) { %>
-                            <% console.log('das') %>
-                                <!-- User hasn't voted yet. -->
-                                <a href="/api/vote/<%= car._id %>" class="login">
-                                    <div class="icon-button">
-                                        <i class="fa fa-check-square"></i> <span style="font-size: 22px;">Vote For
-                                            Me</span>
-                                    </div>
-                                </a>
-                                <% } else if (user.voted && user.voted['_id']==car._id.toString()) { %>
-                                    <% console.log('me') %>
-                                        <!-- User has already voted for this car. -->
-                                        <h2>You voted for me!</h2>
-                                        <% } else if (user.voted) {%>
-                                            <% console.log('otha') %>
-                                                <h2>You already voted for another car!</h2>
-                                                <% } %>
+                        <% } else if (user.voted && user.voted['_id']==car._id.toString()) { %>
+                            <!-- User has already voted for this car. -->
+                            <h2>You voted for me!</h2>
+                            <% } else if (user.voted) {%>
+                                <% console.log('otha') %>
+                                    <h2>You already voted for another car!</h2>
+                                    <% } %>
             </div>
 
             <% } %>
