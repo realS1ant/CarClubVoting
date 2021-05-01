@@ -29,7 +29,6 @@ router.get('/', async (req, res, next) => {
         if (req.isAuthenticated() && req.user.voted) {
             const car = await Car.findById(req.user.voted._id);
             if (car) {
-                console.log(car);
                 req.user.voted = car;
                 await User.findByIdAndUpdate(req.user._id, req.user);
             } else {
