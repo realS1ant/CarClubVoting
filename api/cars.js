@@ -2,13 +2,13 @@ const router = require('express').Router();
 const { isValidObjectId } = require('mongoose');
 const Car = require('../models/Car.js');
 
-// router.use((req, res, next) => {
-//     if (req.isAuthenticated() && req.user['admin']) {
-//         next();
-//     } else {
-//         res.status(401);
-//     }
-// });
+router.use((req, res, next) => {
+    if (req.isAuthenticated() && req.user['admin']) {
+        next();
+    } else {
+        res.status(401);
+    }
+});
 
 //Create a car obj
 router.post('/', async (req, res, next) => {
