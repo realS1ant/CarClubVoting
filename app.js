@@ -49,7 +49,7 @@ passport.use('google', new GoogleStrategy(
     {
         clientID: process.env.GOOGLECID,
         clientSecret: process.env.GOOGLESECRET,
-        callbackURL: `/api/auth/google/callback`,
+        callbackURL: `${process.env.HOSTNAME}/api/auth/google/callback`,
         scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
     },
     async (accessToken, refreshToken, profile, done) => {
