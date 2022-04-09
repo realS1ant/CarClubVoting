@@ -27,6 +27,7 @@ carCreateBtn.onclick = async () => {
     let model = document.getElementById('model-in').value;
     let year = document.getElementById('year-in').value;
     let searchPhrase = document.getElementById('searchphrase-in').value;
+    let download = document.getElementById('download-in').checked;
     if (!(make && model && year && owner)) {
         carMsg.style.color = 'red';
         carMsg.innerText = 'Fill in all the fields first!';
@@ -50,7 +51,7 @@ carCreateBtn.onclick = async () => {
         document.getElementById('year-in').value = '';
         document.getElementById('searchphrase-in').value = '';
 
-        generateQRCode(searchPhrase);
+        if(download) generateQRCode(searchPhrase);
     } else {
         let res = await fetch('/api/cars', {
             method: 'POST',
@@ -68,7 +69,7 @@ carCreateBtn.onclick = async () => {
         document.getElementById('year-in').value = '';
         document.getElementById('searchphrase-in').value = '';
 
-        generateQRCode(res.car._id)
+        if(download) generateQRCode(res.car._id)
     }
 };
 
@@ -81,6 +82,8 @@ async function generateQRCode(query) {
 
     let pdf = new File([res], `${query}.pdf`);
 
+
+    //sketch download
     let a = document.createElement('a');
     a.style.display = 'none';
     a.setAttribute('href', URL.createObjectURL(pdf));

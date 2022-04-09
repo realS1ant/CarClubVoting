@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
             return;
         }
         if (req.user.voted) {
-            req.user.voted = await Car.findById(req.user.voted._id);
+            car = await Car.findById(req.user.voted._id);
             if (car) {
                 req.user.voted = car;
             } else {
@@ -47,6 +47,24 @@ router.get('/login', (req, res, next) => {
 
 router.get('/logout', ensureLoggedIn, (req, res) => {
     req.logout();
+    res.redirect('/');
+});
+
+router.get('/registration', async (req, res, next) => {
+    if(req.session.registeredCars && req.session.registeredCars.length >= 3) { //Soft way to prevent spam, since we don't want to stop people from registering their car if they dont have a google/facebook account.
+        req.session.error = 'You have already registered three cars! If you wish to register more contact Thad at 2024052@sluh.org';
+        req.session.save();
+        res.redirect('/');
+        return;
+    } else {
+        const cars = req.session.registeredCars ? await Promise.all(req.session.registeredCars.map(carId => Car.findById(carId))) : [];
+        res.render('registration.ejs', { registeredCars: cars });
+    }
+});
+
+router.get('/test', async (req, res) => {
+    req.session.registeredCars = ['624e56c642ffc32b242c9c33'];
+    req.session.save();
     res.redirect('/');
 });
 

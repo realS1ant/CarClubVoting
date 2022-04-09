@@ -68,6 +68,71 @@ router.get('/highestvotes', async (req, res, next) => {
     });
 });
 
+//api/cars/multipage?ids=12987sd;122dsabn;3asdea
+router.get('/multipage', async (req, res) => {
+    let { ids } = req.query;
+
+    let cars = await Promise.all(ids.split(';').map(carId => Car.findById(carId).exec()));
+
+    let pdf = new PDFKit({ bufferPages: true });
+    // pdf.pipe(fs.createWriteStream(`qrcodes/balls.pdf`));
+
+    let buffers = [];
+    pdf.on('data', buffers.push.bind(buffers));
+    pdf.on('end', () => {
+        let pdfData = Buffer.concat(buffers);
+        res.writeHead(200, {
+            'Content-Length': Buffer.byteLength(pdfData),
+            'Content-Type': 'application/pdf',
+            'Content-disposition': `attachment;filename=Multipage-${cars.length}.pdf`
+        }).end(pdfData);
+    });
+
+    for await (const car of cars) {
+        if (car == null) return;
+
+        //async callback, inside of sync function, inside of for await of, hell.
+        await new Promise((resolve, reject) => {
+            fs.stat(`./qrcodes/${car.id}.png`, async (err, stats) => {
+                if (err) {
+                    //doesn't exist, create
+                    await qrcode.toFile(`./qrcodes/${car.id}.png`, `${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${car.searchPhrase ? car.searchPhrase : car.id}`);
+                }
+
+                pdf.fontSize(36).text(`${car.owner}'s`, pdf.x, pdf.y, {
+                    align: 'center'
+                });
+                pdf.fontSize(30).text(`${car.year} ${car.make} ${car.model}`, pdf.x, pdf.y, {
+                    align: 'center'
+                });
+                pdf.image(`qrcodes/${car.id}.png`, (pdf.page.width - 164) / 2, pdf.y, {
+                    fit: [164, 164]
+                });
+                pdf.fontSize(8).text(`${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${car.searchPhrase ? car.searchPhrase : car.id}`, pdf.x, pdf.y, {
+                    align: 'center'
+                });
+                if (cars.indexOf(car) != cars.length - 1) pdf.addPage();
+                resolve();
+            });
+        });
+    };
+    pdf.remove
+    pdf.end();
+});
+
+router.get('/cars', async (req, res) => {
+    let { results, page } = req.query;
+
+    results = +results;
+    page = +page;
+
+    if (!results) results = 20;
+    if (!page) page = 1;
+
+    let cars = await Car.find().sort({ created_at: -1 }).skip((page - 1) * results).limit(results).exec();
+    res.json({ cars, page });
+});
+
 //Get Car by id
 router.get('/:query', async (req, res, next) => {
     const { query } = req.params;
@@ -249,41 +314,46 @@ router.get('/qrcode/:query', async (req, res, next) => {
     }
 
     if (!car) {
-        res.send(500);
+        res.sendStatus(400);
         return null;
     }
 
-    const qr = await qrcode.toFile(`qrcodes/${query}.png`, `${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${query}`)
+    fs.stat(`./qrcodes/${car.id}.png`, async (err, stats) => {
+        if (err) {
+            //doesn't exist, create
+            await qrcode.toFile(`./qrcodes/${car.id}.png`, `${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${car.searchPhrase ? car.searchPhrase : car.id}`);
+        }
 
-    let pdf = new PDFKit({ bufferPages: true });
+        let pdf = new PDFKit({ bufferPages: true });
 
-    let buffers = [];
-    pdf.on('data', buffers.push.bind(buffers));
-    pdf.on('end', () => {
-        let pdfData = Buffer.concat(buffers);
-        res.writeHead(200, {
-            'Content-Length': Buffer.byteLength(pdfData),
-            'Content-Type': 'application/pdf',
-            'Content-disposition': 'attachment;filename=test.pdf'
-        }).end(pdfData);
-    });
-    // pdf.pipe(fs.createWriteStream(`qrcodes/${query}.pdf`));
-    pdf.fontSize(36).text(`${car.owner}'s`, pdf.x, pdf.y, {
-        align: 'center'
-    });
-    pdf.fontSize(30).text(`${car.year} ${car.make} ${car.model}`, pdf.x, pdf.y, {
-        align: 'center'
-    });
-    pdf.image(`qrcodes/${query}.png`, (pdf.page.width - 164) / 2, pdf.y, {
-        fit: [164, 164]
-    });
-    pdf.fontSize(8).text(`${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${query}`, pdf.x, pdf.y, {
-        align: 'center'
-    });
-    pdf.end();
+        let buffers = [];
+        pdf.on('data', buffers.push.bind(buffers));
+        pdf.on('end', () => {
+            let pdfData = Buffer.concat(buffers);
+            res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(pdfData),
+                'Content-Type': 'application/pdf',
+                'Content-disposition': `attachment;filename=${car.id}.pdf`
+            }).end(pdfData);
+        });
+        // pdf.pipe(fs.createWriteStream(`qrcodes/${query}.pdf`));
+        pdf.fontSize(36).text(`${car.owner}'s`, pdf.x, pdf.y, {
+            align: 'center'
+        });
+        pdf.fontSize(30).text(`${car.year} ${car.make} ${car.model}`, pdf.x, pdf.y, {
+            align: 'center'
+        });
+        pdf.image(`qrcodes/${car.id}.png`, (pdf.page.width - 164) / 2, pdf.y, {
+            fit: [164, 164]
+        });
+        pdf.fontSize(8).text(`${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${query}`, pdf.x, pdf.y, {
+            align: 'center'
+        });
+        pdf.end();
 
-    fs.unlink(`qrcodes/${query}.png`, err => {
-        if (err) console.error(err);
+        fs.unlink(`./qrcodes/${car.id}.png`, err => {
+            if (err) console.error(err);
+        });
     });
 });
 

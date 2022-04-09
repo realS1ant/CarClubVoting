@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('head.ejs') %>
+        <title>SLUH Car Club</title>
+</head>
+
+<body>
+    <h1 class="header">SLUH Car Club</h1>
+
+    <% if (typeof error !='undefined' ) { %>
+        <h1 style="color: red; margin-top: 0.5rem;">
+            <%= error %>
+        </h1>
+        <br>
+    <% } %>
+    <div class="content" style="margin-top: 2rem;">
+
+        <% if (registeredCars.length > 0) { %>
+            <div class="registered">
+                <h2>Your Registered Vehicles:</h2>
+                <ul id="registered-cars">
+                    <% registeredCars.forEach(car => { %>
+                     <li><%= `${car.year} ${car.make} ${car.model}` %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } %>
+
+        <% if (registeredCars.length >= 3) { %>
+            <h3>Sorry, but you've already registered three cars! If you wish to register more please contant Thad at 2024052@sluh.org</h3>
+        <% } else { %>
+
+            <div class="registration">
+                <h2 id="register-header"><%= registeredCars.length > 0 ? 'Register Another Car' : 'Register Your Car' %></h2>
+                <label for="owner">Preferred Name</label>
+                <input type="text" name="owner" id="owner" placeholder="Henry Ford" />
+                <label for="year">Vehicle Year</label>
+                <input type="number" name="year" id="year" placeholder="1908" />
+                <label for="make">Vehicle Make</label>
+                <input type="text" name="make" id="make" placeholder="Ford" />
+                <label for="model">Vehicle Model</label>
+                <input type="text" name="model" id="model" placeholder="Model T" />
+                <div class="icon-button admin-btn" id="register-btn">
+                    <i class="fa fa-car-side"></i> <span>Register Car</span>
+                </div>
+            </div>
+
+        <% } %> 
+
+    </div>
+    <%- include('footer.ejs') %>
+    <script src="registration.js"></script>
+</body>
+
+</html>

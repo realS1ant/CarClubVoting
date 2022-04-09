@@ -114,4 +114,4 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 5000;
 const hostname = process.env.HOSTNAME || 'http://localhost';
-app.listen(port, () => { console.log(`Server running on: ${hostname}:${port}`) })
+app.listen(port, () => { console.log(`Server running on: ${hostname}`) })

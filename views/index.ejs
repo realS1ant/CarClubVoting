@@ -15,19 +15,17 @@
         </h1>
         <br>
         <% } %>
-            <% if (typeof user=='undefined' ) { %>
-                <!-- user isn't logged in -->
-                <div class="content">
+            <div class="content">
+                <% if (typeof user=='undefined' ) { %>
+                    <!-- user isn't logged in -->
                     <h1>Login</h1>
                     <a href="/api/auth/google" class="login">
                         <div class="icon-button">
                             <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
                         </div>
                     </a>
-                </div>
-                <% } else { %>
-                    <!-- user is logged in -->
-                    <div class="content">
+                    <% } else { %>
+                        <!-- user is logged in -->
                         <% if (typeof user.voted !='undefined' ) { %>
                             <!-- user has already voted -->
                             <h2>You have voted for:</h2>
@@ -38,15 +36,25 @@
                                 <%= user.voted.year %>
                                     <%= user.voted.make %>
                                         <%= user.voted.model %>
-                                            </h1>
-                                            <% } else { %>
-                                                <!-- user hasn't voted yet. -->
-                                                <h1>You haven't voted yet.</h1>
-                                                <h1>Go scan a QR code!</h1>
-                                                <% } %>
-                    </div>
-                    <% }%>
-                        <%- include('footer.ejs') %>
+                            </h2>
+                            <% } else { %>
+                                <!-- user hasn't voted yet. -->
+                                <h1>You haven't voted yet.</h1>
+                                <h1>Go scan a QR code!</h1>
+                                <% } %>
+
+                                <% if (user.admin) { %>
+                                    <a href="/admin" class="admin">
+                                        <div class="icon-button">
+                                            <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin Page</span>
+                                        </div>
+                                    </a>
+                                    <% } %>
+                                    <% }%>
+
+
+            </div>
+                    <%- include('footer.ejs') %>
 </body>
 
 </html>

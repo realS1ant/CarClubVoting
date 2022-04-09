@@ -1,28 +1,31 @@
 const express = require('express');
 const admin = express.Router();
-const adminApi = express.Router();
 
-function secureEndpoint(req, res, next) {
-    if (req.isAuthenticated() && req.user['admin']) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
-}
-
-admin.use(secureEndpoint);
-adminApi.use(secureEndpoint);
+admin.use((req, res, next) => {
+    if (req.isAuthenticated() && req.user['admin']) next();
+    else res.redirect('/login');
+});
 
 admin.get('/', (req, res) => {
     res.render('admin/dash.ejs');
 });
 
-adminApi.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Admin Api base endpoint'
-    });
+admin.get('/votes', (req, res) => {
+    res.render('admin/votes.ejs');
 });
+
+admin.get('/events', (req, res) => {
+    res.render('admin/events.ejs');
+});
+
+admin.get('/cars', (req, res) => {
+    res.render('admin/cars.ejs');
+});
+
+admin.get('/users', (req, res) => {
+    res.render('admin/users.ejs');
+});
+
 module.exports = {
-    adminRouter: admin,
-    adminApiRouter: adminApi
+    adminRouter: admin
 };
