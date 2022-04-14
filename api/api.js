@@ -6,6 +6,25 @@ const Car = require('../models/Car');
 const { ensureLoggedIn, updateUser } = require('../utils');
 const carsRouter = require('./cars');
 const adminRouter = require('./admin');
+const { votingOpen, registrationOpen } = require('../config');
+
+const ensureVotingOpen = async (req, res, next) => {
+    if (votingOpen()) next();
+    else {
+        req.session.error = "Sorry, we aren't currently open for voting.";
+        req.session.save();
+        res.redirect('/');
+        return;
+    }
+};
+
+const ensureRegistrationOpen = async (req, res, next) => {
+    if (registrationOpen()) next();
+    else {
+        res.redirect('/');
+        return;
+    }
+};
 
 router.get('/', (req, res, next) => {
     res.status(200).json({
@@ -29,7 +48,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 
 //TODO: make session['voted'] store and id instead of copy of the object... (why the hell did I do that in the first place???)
-router.get('/vote/:carId', ensureLoggedIn, async (req, res, next) => {
+router.get('/vote/:carId', ensureLoggedIn, ensureVotingOpen, async (req, res, next) => {
     const { carId } = req.params;
     if (!carId || !isValidObjectId(carId)) {
         res.status(400).json({
@@ -58,7 +77,7 @@ router.get('/vote/:carId', ensureLoggedIn, async (req, res, next) => {
     res.redirect(`/car/${carId}`);
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', ensureRegistrationOpen, async (req, res) => {
     const { make, model, year, owner } = req.body;
     if (!(make && model && year && owner)) {
         res.status(400).json({ success: false, message: "Invalid Input(make, model, year, and owner)." });

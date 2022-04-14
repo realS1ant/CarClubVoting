@@ -72,7 +72,22 @@ router.get('/highestvotes', async (req, res, next) => {
 router.get('/multipage', async (req, res) => {
     let { ids } = req.query;
 
-    let cars = await Promise.all(ids.split(';').map(carId => Car.findById(carId).exec()));
+    if (!ids || ids.length == 0) {
+        res.status(400).json({ message: 'No IDs specified.' })
+        return;
+    }
+
+    let cars = await Promise.all(ids.split(';').map(carId => {
+        let car;
+        try {
+            car = Car.findById(carId).exec()
+        } catch {
+            res.status(400).json({ message: 'No IDs specified.' })
+            return;
+        }
+
+        return car;
+    }));
 
     let pdf = new PDFKit({ bufferPages: true });
     // pdf.pipe(fs.createWriteStream(`qrcodes/balls.pdf`));
@@ -133,8 +148,28 @@ router.get('/cars', async (req, res) => {
     res.json({ cars, page });
 });
 
+router.get('/clearvotes', async (req, res) => {
+    let { ids } = req.query;
+
+    if (!ids) {
+        res.status(400).json({ message: 'No IDs specified.' })
+        return;
+    }
+
+    let carIds = await Promise.all(ids.split(';'));
+
+    if (carIds.length == 0) {
+        res.status(400).json({ message: 'No IDs specified.' })
+        return;
+    }
+
+    let query = await Car.updateMany({ '_id': { $in: carIds } }, { votes: 0 }).exec();
+
+    res.status(200).json({ message: `Reset votes of specified vehicles.` })
+});
+
 //Get Car by id
-router.get('/:query', async (req, res, next) => {
+router.get('/:query', async (req, res) => {
     const { query } = req.params;
 
     if (!query) {
@@ -206,7 +241,7 @@ router.get('/:query', async (req, res, next) => {
 });
 
 //Update Car
-router.put('/:query', async (req, res, next) => {
+router.put('/:query', async (req, res) => {
     const { query } = req.params;
     const { make, model, year, owner, votes, searchPhrase } = req.body;
 
@@ -253,7 +288,7 @@ router.put('/:query', async (req, res, next) => {
     }
 });
 
-router.delete('/:query', async (req, res, next) => {
+router.delete('/:query', async (req, res) => {
     const { query } = req.params;
 
     if (!query) {
@@ -296,7 +331,7 @@ router.delete('/:query', async (req, res, next) => {
     }
 });
 
-router.get('/qrcode/:query', async (req, res, next) => {
+router.get('/qrcode/:query', async (req, res) => {
     const { query } = req.params;
 
     if (!query) {

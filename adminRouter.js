@@ -26,6 +26,10 @@ admin.get('/users', (req, res) => {
     res.render('admin/users.ejs');
 });
 
+admin.get('/config', (req, res) => {
+    res.render('admin/config.ejs');
+})
+
 module.exports = {
     adminRouter: admin
 };

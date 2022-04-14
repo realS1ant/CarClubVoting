@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('head.ejs') %>
+        <title>SLUH Car Club</title>
+</head>
+
+<body>
+    <h1 class="header">SLUH Car Club</h1>
+
+    <% if (typeof error !='undefined' ) { %>
+        <h1 style="color: red; margin-top: 0.5rem;">
+            <%= error %>
+        </h1>
+        <br>
+        <% } %>
+            <div class="content">
+                <h2>We are not currently open for voting.</h2>
+
+                <% if (registration) { %>
+                    <h2 style="margin-top: 1.5rem;">If you'd like to register your vehicle for the event you may do so
+                        below.</h2>
+                    <a href="/registration" class="login">
+                        <div class="icon-button">
+                            <i class="fab fa-vehicle"></i> <span>Registration</span>
+                        </div>
+                    </a>
+                    <% } %>
+
+                        <% if (typeof user!='undefined' ) { %>
+                            <% if (user.admin) { %>
+                                <a href="/admin" class="admin">
+                                    <div class="icon-button">
+                                        <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin
+                                            Page</span>
+                                    </div>
+                                </a>
+                                <% } %>
+                                    <% } %>
+
+            </div>
+            <%- include('footer.ejs') %>
+</body>
+
+</html>

@@ -43,18 +43,29 @@
                                 <h1>Go scan a QR code!</h1>
                                 <% } %>
 
-                                <% if (user.admin) { %>
-                                    <a href="/admin" class="admin">
-                                        <div class="icon-button">
-                                            <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin Page</span>
-                                        </div>
-                                    </a>
-                                    <% } %>
-                                    <% }%>
-
+                                    <% if (user.admin) { %>
+                                        <a href="/admin" class="admin">
+                                            <div class="icon-button">
+                                                <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin
+                                                    Page</span>
+                                            </div>
+                                        </a>
+                                        <% } %>
+                                            <% }%>
+                                                <% if (registration) { %>
+                                                    <h2>If you'd like to register your vehicle for the event
+                                                        you may do
+                                                        so below.</h2>
+                                                    <a href="/registration" class="login">
+                                                        <div class="icon-button">
+                                                            <i class="fab fa-vehicle"></i>
+                                                            <span>Registration</span>
+                                                        </div>
+                                                    </a>
+                                                    <% } %>
 
             </div>
-                    <%- include('footer.ejs') %>
+            <%- include('footer.ejs') %>
 </body>
 
 </html>

@@ -32,7 +32,7 @@ body {
   width: 85%;
 }
 
-@media only screen and (max-width: 380px) {
+@media only screen and (min-width: 380px) {
 
   .content,
   .footer {
@@ -266,9 +266,10 @@ h2 {
 #cars th {
   padding-top: 12px;
   padding-bottom: 12px;
-  text-align: left;
+  /* text-align: left; */
   background-color: #02af76;
   color: white;
+  font-size: 26px;
 }
 
 #cars input {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../head.ejs') %>
+        <title>SLUH Car Club</title>
+</head>
+
+<body>
+    <h1 class="header">SLUH Car Club</h1>
+    <div class="admin-content">
+        <h1 style="margin-top: 0.5rem;" id="config-msg"></h1>
+
+        <div class="config-value">
+            <input type="checkbox" name="voting" id="voting">
+            <h3>Voting Open</h3>
+        </div>
+        <div class="config-value">
+            <input type="checkbox" name="registration" id="registration">
+            <h3>Registration Open</h3>
+        </div>
+        <div id="cars-btns">
+            <button id="update-btn">Update Config</button>
+        </div>
+    </div>
+    <script src="../config-script.js"></script>
+</body>
+
+</html>
