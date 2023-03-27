@@ -3,7 +3,7 @@
 
 <head>
     <%- include('../head.ejs') %>
-    <title>SLUH Car Club Admin</title>
+        <title>SLUH Car Club Admin</title>
 </head>
 
 <body>
@@ -17,7 +17,8 @@
         <input type="text" name="make" id="make-in" placeholder="Ford" />
         <input type="text" name="model" id="model-in" placeholder="Model T" />
         <input type="text" name="searchphrase" id="searchphrase-in" placeholder="Search Phrase (Not Required)" />
-        <input type="checkbox" name="download" id="download-in"> <label for="download-in" class="download-label">Download PDF Now?</label>
+        <input type="checkbox" name="download" id="download-in"> <label for="download-in"
+            class="download-label">Download PDF Now?</label>
         <div class="icon-button admin-btn" id="car-create-btn">
             <i class="fa fa-car-side"></i> <span>Create Car</span>
         </div>
@@ -27,22 +28,22 @@
                 <span>Top Votes</span>
             </div>
         </a>
-        <a href="/admin/events">
+        <a href="/admin/config">
             <div class="icon-button admin-btn">
-                <!-- <i class="fa fa-list-ul"></i> -->
-                 <span>Logs</span>
+                <i class="fa fa-cog"></i>
+                <span>Configuration</span>
             </div>
         </a>
         <a href="/admin/cars">
             <div class="icon-button admin-btn">
                 <i class="fa fa-list-ul"></i>
-                 <span>Cars</span>
+                <span>Cars</span>
             </div>
         </a>
         <a href="/admin/users">
             <div class="icon-button admin-btn">
                 <i class="fa fa-list-ul"></i>
-                 <span>Users</span>
+                <span>Users</span>
             </div>
         </a>
         <div id="data"></div>

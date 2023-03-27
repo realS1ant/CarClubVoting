@@ -114,7 +114,7 @@ router.post('/register', ensureRegistrationOpen, async (req, res) => {
         message: "Car successfully registered!",
         car
     });
-    let cars = [...req.session.registeredCars];
+    let cars = req.session.registeredCars ? [...req.session.registeredCars] : [];
     cars.push(car.id);
     req.session.registeredCars = cars;
     req.session.save();
