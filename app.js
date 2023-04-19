@@ -13,7 +13,7 @@ const User = require('./models/User.js');
 const apiRouter = require('./api/api.js');
 const { adminRouter } = require('./adminRouter.js');
 const router = require('./router.js');
-require('dotenv').config();
+if (!process.env.MONGOURI) require('dotenv').config(); //If env vars already defined we don't need dotenv (development only)
 
 mongoose.connect(process.env.MONGOURI, {
     useUnifiedTopology: true,
@@ -32,14 +32,17 @@ app.use(express.static(__dirname + '/public'))
 app.use(helmet());
 app.use(cors());
 
+
+const behindProxy = !(process.env.ENV === 'dev');
 app.use(session({
-    secret: 'fsjahKKJ@#H!KJ#asdjhk(*A&#8742bjkzdjh',
+    secret: process.env.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    proxy: behindProxy,
     cookie: {
         maxAge: 86400000, // 86400000 ms = 1 day (1 * 24 * 60 * 60 * 1000)
-        secure: !(process.env.ENV == 'dev')
+        secure: behindProxy
     }
 }));
 
