@@ -1,55 +1,22 @@
 const fs = require('fs');
+let configCache;
 
-function votingOpen() {
-    try {
-        let buffer = fs.readFileSync('config.json');
-        let data = JSON.parse(buffer.toString());
-
-        return data.votingOpen;
-    } catch (e) {
-        console.error(e);
-        return true;
-    }
+function getValue(key) {
+    if (!configCache) getConfig();
+    return configCache[key];
 }
 
-function setVotingOpen(value) {
-    let data = JSON.stringify({
-        votingOpen: value,
-        registrationOpen: registrationOpen()
-    });
-
-    fs.writeFile('config.json', data, err => {
-        if (err) console.error(err);
-    });
-}
-
-function registrationOpen() {
-    try {
-        let buffer = fs.readFileSync('config.json');
-        let data = JSON.parse(buffer.toString());
-
-        return data.registrationOpen;
-    } catch (e) {
-        console.error(e);
-        return true;
-    }
-}
-
-function setRegistrationOpen(value) {
-    let data = JSON.stringify({
-        registrationOpen: value,
-        votingOpen: votingOpen()
-    });
-
-    fs.writeFile('config.json', data, err => {
-        if (err) console.error(err);
-    });
+function setValue(key, value) {
+    if (!configCache) getConfig();
+    configCache[key] = value;
+    setConfig(configCache);
 }
 
 function setConfig(object) {
     fs.writeFile('config.json', JSON.stringify(object), err => {
         if (err) console.error(err);
     });
+    configCache = object;
 }
 
 function getConfig() {
@@ -57,6 +24,7 @@ function getConfig() {
         let buffer = fs.readFileSync('config.json');
         let data = JSON.parse(buffer.toString());
 
+        configCache = data;
         return data;
     } catch (e) {
         console.error(e);
@@ -68,4 +36,4 @@ function getConfig() {
 }
 
 
-module.exports = { votingOpen, registrationOpen, getConfig, setConfig };
+module.exports = { getValue, setValue, getConfig, setConfig };

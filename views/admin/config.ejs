@@ -9,15 +9,24 @@
 <body>
     <h1 class="header">SLUH Car Club</h1>
     <div class="admin-content">
-        <h1 style="margin-top: 0.5rem;" id="config-msg"></h1>
-
-        <div class="config-value">
-            <input type="checkbox" name="voting" id="voting">
-            <h3>Voting Open</h3>
-        </div>
-        <div class="config-value">
-            <input type="checkbox" name="registration" id="registration">
-            <h3>Registration Open</h3>
+        <span style="margin-top: 0.5rem;" id="config-msg"></span>
+        <div id="config-values">
+            <div class="config-value">
+                <input type="checkbox" id="voting">
+                <label>Voting Open</label>
+            </div>
+            <div class="config-value">
+                <input type="checkbox" id="registration">
+                <label>Registration Open</label>
+            </div>
+            <div class="config-value">
+                <input type="checkbox" id="requireLogin">
+                <label>Require Login</label>
+            </div>
+            <div class="config-value">
+                <label>Upcoming Meet ID</label>
+                <input type="text" id="meetId">
+            </div>
         </div>
         <div id="cars-btns">
             <button id="update-btn">Update Config</button>

@@ -15,6 +15,14 @@ router.get('/config', (req, res) => {
     });
 })
 
+router.patch('/config', (req, res) => {
+    setConfig(req.body);
+
+    res.status(200).json({
+        message: 'Successfully updated the configuration values!'
+    });
+})
+
 router.patch('/setconfig', (req, res) => {
     try {
         const { voting, registration } = req.body;
