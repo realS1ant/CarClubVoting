@@ -1,1 +1,6 @@
-{"voting":false,"registration":true,"requireLogin":false,"meetId":"april2023"}
+{
+    "voting": true,
+    "registration": true,
+    "requireLogin": false,
+    "meetId": "april2023"
+}

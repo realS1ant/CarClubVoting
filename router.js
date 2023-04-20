@@ -4,10 +4,10 @@ const Car = require('./models/Car');
 const User = require('./models/User');
 const { ensureLoggedIn } = require('./utils');
 const router = express.Router();
-const { votingOpen, registrationOpen } = require('./config');
+const { getValue } = require('./config');
 
 const ensureVotingOpen = async (req, res, next) => {
-    if (votingOpen()) next();
+    if (getValue('voting')) next();
     else {
         req.session.error = "Sorry, we aren't currently open for voting.";
         req.session.save();
@@ -17,7 +17,7 @@ const ensureVotingOpen = async (req, res, next) => {
 };
 
 const ensureRegistrationOpen = async (req, res, next) => {
-    if (registrationOpen()) next();
+    if (getValue('registration')) next();
     else {
         res.redirect('/');
         return;
@@ -25,7 +25,7 @@ const ensureRegistrationOpen = async (req, res, next) => {
 };
 
 router.get('/', async (req, res) => {
-    let registration = registrationOpen();
+    let registration = getValue('registration');
 
     let vars = { registration };
 
@@ -35,57 +35,10 @@ router.get('/', async (req, res) => {
         req.session.save();
     }
 
-    // if (req.user.voted) {
-    //     //OLD VOTED CODE, SWITCH TO USING ID'S INSTEAD OF COPIES (dumby)
-    //     let car = await Car.findById(req.user.voted._id);
-    //     if (car) {
-    //         req.user.voted = car;
-    //     } else {
-    //         delete req.user.voted;
-    //         await User.findByIdAndUpdate(req.user._id, req.user);
-    //     }
-
-
-    //     // vars.votedCar = await Car.findById(req.user.voted);
-    // }
-
     vars.user = req.user;
 
-    if (votingOpen()) res.render('index.ejs', vars);
+    if (getValue('voting')) res.render('index.ejs', vars);
     else res.render('index-closed.ejs', vars);
-
-    // if (req.session['error']) {
-    //     if (!req.isAuthenticated()) {
-    //         res.render('index.ejs', { user: req.user, error: req.session.error, registration });
-    //         delete req.session['error'];
-    //         req.session.save();
-    //         return;
-    //     }
-    //     if (req.user.voted) {
-    //         car = await Car.findById(req.user.voted._id);
-    //         if (car) {
-    //             req.user.voted = car;
-    //         } else {
-    //             delete req.user.voted;
-    //             await User.findByIdAndUpdate(req.user._id, req.user);
-    //         }
-    //     }
-    //     res.render('index.ejs', { user: req.user, error: req.session.error, registration });
-    //     delete req.session['error'];
-    //     req.session.save();
-    // } else {
-    //     if (req.isAuthenticated() && req.user.voted) {
-    //         const car = await Car.findById(req.user.voted._id);
-    //         if (car) {
-    //             req.user.voted = car;
-    //             await User.findByIdAndUpdate(req.user._id, req.user);
-    //         } else {
-    //             delete req.user.voted;
-    //             await User.findByIdAndUpdate(req.user._id, req.user);
-    //         }
-    //     }
-    //     res.render('index.ejs', { user: req.user, registration });
-    // }
 });
 
 router.get('/login', (req, res, next) => {
@@ -110,16 +63,11 @@ router.get('/registration', ensureRegistrationOpen, async (req, res, next) => {
     }
 });
 
-// router.get('/test', async (req, res) => {
-//     req.session.registeredCars = ['624e56c642ffc32b242c9c33'];
-//     req.session.save();
-//     res.redirect('/');
-// });
 
 router.get('/car/:query', ensureVotingOpen, async (req, res) => {
     const { query } = req.params;
     if (!query) {
-        res.render('car.ejs', { user: req.user, error: 'Invalid URL.' });
+        res.render('car.ejs', { error: 'Invalid URL.' });
         return;
     }
     let car;
@@ -128,12 +76,17 @@ router.get('/car/:query', ensureVotingOpen, async (req, res) => {
     } else {
         car = await Car.findOne({ searchPhrase: query.toLowerCase() });
     }
+
+    let requireLogin = getValue('requireLogin');
+    let votedId;
+    if (requireLogin) votedId = req.user.votedId;
+    else votedId = req.session.votedId;
     if (car) {
         let carobj = car.toObject();
         delete carobj['votes']; //so we don't expose the **super secret** votes to our lovely users
-        res.render('car.ejs', { user: req.user, car: carobj });
+        res.render('car.ejs', { votedId, car: carobj, requireLogin, user: req.user });
     } else {
-        res.render('car.ejs', { user: req.user, error: 'Can\'t find that car!' });
+        res.render('car.ejs', { user: req.user, error: 'Can\'t find that car!', requireLogin });
     }
 });
 

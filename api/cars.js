@@ -60,10 +60,8 @@ router.get('/highestvotes', async (req, res, next) => {
         return;
     }
 
-    const votes = (await Car.find().sort({ 'votes': -1 }).limit(1))[0].votes; //find the number for the votes.
-    const cars = await Car.find({ votes });
+    const cars = (await Car.find().sort({ 'votes': -1 }).limit(3));
     res.status(200).json({
-        votes,
         cars
     });
 });

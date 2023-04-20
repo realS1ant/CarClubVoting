@@ -16,6 +16,7 @@ router.get('/config', (req, res) => {
 })
 
 router.patch('/config', (req, res) => {
+    //TODO: Maybe validation, or only update changed values (or only send changed values from client side)
     setConfig(req.body);
 
     res.status(200).json({
