@@ -1,19 +1,3 @@
-let votesButton = document.getElementById('votes-btn');
-
-votesButton.onclick = async () => {
-    const res = await fetch('/api/cars/highestvotes').then(res => res.json());
-    let dataContainer = document.getElementById('data');
-    dataContainer.innerText = '';
-    dataContainer.innerHTML += `<h1 style="margin-bottom: 1rem;">Votes: ${res.votes}</h1>`;
-    res.cars.forEach(car => {
-        dataContainer.innerHTML += `
-        <h3>${car.owner}'s</h3>
-        <h4>${car.year} ${car.make} ${car.model}</h4>
-        <p style="margin-bottom: 1rem;">Search Phrase: ${car.searchPhrase || 'None'}</p>
-        `;
-    });
-};
-
 let carCreateBtn = document.getElementById('car-create-btn');
 let carMsg = document.getElementById('car-create-msg');
 
@@ -51,7 +35,7 @@ carCreateBtn.onclick = async () => {
         document.getElementById('year-in').value = '';
         document.getElementById('searchphrase-in').value = '';
 
-        if(download) generateQRCode(searchPhrase);
+        if (download) generateQRCode(searchPhrase);
     } else {
         let res = await fetch('/api/cars', {
             method: 'POST',
@@ -69,7 +53,7 @@ carCreateBtn.onclick = async () => {
         document.getElementById('year-in').value = '';
         document.getElementById('searchphrase-in').value = '';
 
-        if(download) generateQRCode(res.car._id)
+        if (download) generateQRCode(res.car._id)
     }
 };
 
