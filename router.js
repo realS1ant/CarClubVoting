@@ -26,19 +26,18 @@ const ensureRegistrationOpen = async (req, res, next) => {
 
 router.get('/', async (req, res) => {
     let registration = getValue('registration');
+    let voting = getValue('voting');
+    let requireLogin = getValue('requireLogin');
+    let votedId = requireLogin ? req.user.votedId : req.session.votedId;
 
-    let vars = { registration };
+    let vars = { registration, voting, requireLogin, votedId };
 
-    if (req.session.error) {
-        vars.error = req.session.error;
-        delete req.session.error;
-        req.session.save();
+    if (votedId != undefined) {
+        console.log(votedId)
+        vars.car = await Car.findById(votedId);
     }
 
-    vars.user = req.user;
-
-    if (getValue('voting')) res.render('index.ejs', vars);
-    else res.render('index-closed.ejs', vars);
+    res.render('index.ejs', vars);
 });
 
 router.get('/login', (req, res, next) => {

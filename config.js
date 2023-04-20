@@ -28,9 +28,11 @@ function getConfig() {
         return data;
     } catch (e) {
         console.error(e);
+        console.error('COULD NOT LOAD CONFIG.JSON, PROVIDING DEFAULT VOTING AND REGISTRATION BOTH OPEN.');
         return {
-            votingOpen: true,
-            registrationOpen: true
+            voting: true,
+            registration: true,
+            requireLogin: false
         };
     }
 }

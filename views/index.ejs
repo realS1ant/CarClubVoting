@@ -16,42 +16,44 @@
         <br>
         <% } %>
             <div class="content">
-                <% if (typeof user=='undefined' ) { %>
-                    <!-- user isn't logged in -->
-                    <h1>Login</h1>
-                    <a href="/api/auth/google" class="login">
-                        <div class="icon-button">
-                            <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
-                        </div>
-                    </a>
-                    <% } else { %>
-                        <!-- user is logged in -->
-                        <% if (typeof user.voted !='undefined' ) { %>
-                            <!-- user has already voted -->
-                            <h2>You have voted for:</h2>
-                            <h1>
-                                <%= user.voted.owner %>'s
-                            </h1>
-                            <h2>
-                                <%= user.voted.year %>
-                                    <%= user.voted.make %>
-                                        <%= user.voted.model %>
-                            </h2>
+                <% if (voting) { %>
+                    <% if (typeof votedId !='undefined' ) { %>
+                        <!-- User has already voted -->
+                        <h2>You have voted for:</h2>
+                        <h1>
+                            <%= car.owner %>'s
+                        </h1>
+                        <h2>
+                            <%= car.year %>
+                                <%= car.make %>
+                                    <%= car.model %>
+                        </h2>
+                        <% } else if (requireLogin) {%>
+                            <!-- user isn't logged in -->
+                            <h1>Login</h1>
+                            <a href="/api/auth/google" class="login">
+                                <div class="icon-button">
+                                    <i class="fab fa-google"></i> <span>Login With Google To Vote</span>
+                                </div>
+                            </a>
                             <% } else { %>
                                 <!-- user hasn't voted yet. -->
                                 <h1>You haven't voted yet.</h1>
                                 <h1>Go scan a QR code!</h1>
                                 <% } %>
 
-                                    <% if (user.admin) { %>
-                                        <a href="/admin" class="admin">
-                                            <div class="icon-button">
-                                                <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin
-                                                    Page</span>
-                                            </div>
-                                        </a>
-                                        <% } %>
-                                            <% }%>
+                                    <% } %>
+
+                                        <% if (typeof user !='undefined' && user.admin) { %>
+                                            <a href="/admin" class="admin">
+                                                <div class="icon-button">
+                                                    <i class="fa fa-user"></i> <span style="font-size: 18px;">Admin
+                                                        Page</span>
+                                                </div>
+                                            </a>
+                                            <% } %>
+
+                                                <br />
                                                 <% if (registration) { %>
                                                     <h2>If you'd like to register your vehicle for the event
                                                         you may do
@@ -63,7 +65,6 @@
                                                         </div>
                                                     </a>
                                                     <% } %>
-
             </div>
             <%- include('footer.ejs') %>
 </body>
