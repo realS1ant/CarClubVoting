@@ -17,8 +17,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    voted: {
-        type: Object, // just the full car object
+    votedId: {
+        type: mongoose.Schema.Types.ObjectId,
         required: false
     },
     admin: {

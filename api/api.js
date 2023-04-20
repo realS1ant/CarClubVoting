@@ -6,10 +6,11 @@ const Car = require('../models/Car');
 const { ensureLoggedIn, updateUser } = require('../utils');
 const carsRouter = require('./cars');
 const adminRouter = require('./admin');
-const { votingOpen, registrationOpen } = require('../config');
+const { getValue } = require('../config');
+const User = require('../models/User');
 
 const ensureVotingOpen = async (req, res, next) => {
-    if (votingOpen()) next();
+    if (getValue('voting')) next();
     else {
         req.session.error = "Sorry, we aren't currently open for voting.";
         req.session.save();
@@ -18,8 +19,13 @@ const ensureVotingOpen = async (req, res, next) => {
     }
 };
 
+const ensureCanVote = async (req, res, next) => {
+    if (getValue('requireLogin')) ensureLoggedIn(req, res, next);
+    else next();
+}
+
 const ensureRegistrationOpen = async (req, res, next) => {
-    if (registrationOpen()) next();
+    if (getValue('registration')) next();
     else {
         res.redirect('/');
         return;
@@ -48,7 +54,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 
 //TODO: make session['voted'] store and id instead of copy of the object... (why the hell did I do that in the first place???)
-router.get('/vote/:carId', ensureLoggedIn, ensureVotingOpen, async (req, res, next) => {
+/*router.get('/vote/:carId', ensureLoggedIn, ensureVotingOpen, async (req, res, next) => {
     const { carId } = req.params;
     if (!carId || !isValidObjectId(carId)) {
         res.status(400).json({
@@ -65,7 +71,7 @@ router.get('/vote/:carId', ensureLoggedIn, ensureVotingOpen, async (req, res, ne
             res.redirect('/');
             return;
         }
-        user.voted = car;
+        user.voted = carId;
         user.save();
         car.votes += 1;
         car.save();
@@ -75,6 +81,39 @@ router.get('/vote/:carId', ensureLoggedIn, ensureVotingOpen, async (req, res, ne
         return;
     }
     res.redirect(`/car/${carId}`);
+});
+*/
+
+router.get('/vote/:carId', ensureVotingOpen, ensureCanVote, async (req, res, next) => {
+    const { carId } = req.params;
+    if (!carId || !isValidObjectId(carId)) {
+        res.status(400).json({
+            success: false,
+            error: 'Invalid Car ID'
+        });
+        return;
+    }
+
+    voted = getValue('requireLogin') ? (await User.findById(req.user._id)).votedId != undefined : req.session.votedId != undefined;
+    if (voted) {
+        req.session.error = 'You have already voted!';
+        res.redirect('/');
+        return;
+    }
+
+    const car = await Car.findById(carId);
+    if (!car) {
+        req.session['error'] = 'Incorrect Car ID';
+        res.redirect('/');
+        return;
+    }
+
+    if (getValue('requireLogin')) User.findByIdAndUpdate(req.user._id, { votedId: carId });
+    else req.session.votedId = carId;
+    car.votes += 1;
+    car.save();
+
+    res.status(200).redirect(`/car/${carId}`);
 });
 
 router.post('/register', ensureRegistrationOpen, async (req, res) => {

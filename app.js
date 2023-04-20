@@ -41,7 +41,8 @@ app.use(session({
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
     proxy: behindProxy,
     cookie: {
-        maxAge: 86400000, // 86400000 ms = 1 day (1 * 24 * 60 * 60 * 1000)
+        //remove maxAge to keep session cooke as long as we can.
+        //maxAge: 172800000, // 172800000 ms = 2 days (2 * 24 * 60 * 60 * 1000)
         secure: behindProxy
     }
 }));
