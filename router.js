@@ -29,14 +29,15 @@ router.get('/', async (req, res) => {
     let voting = getValue('voting');
     let requireLogin = getValue('requireLogin');
     let votedId = requireLogin ? req.user.votedId : req.session.votedId;
+    let admin = req.user.admin;
 
-    let vars = { registration, voting, requireLogin, votedId };
+    let vars = { registration, voting, requireLogin, votedId, admin };
 
     if (votedId != undefined) {
         console.log(votedId)
         vars.car = await Car.findById(votedId);
     }
-
+    console.log(vars)
     res.render('index.ejs', vars);
 });
 
