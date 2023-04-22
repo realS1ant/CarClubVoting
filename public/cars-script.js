@@ -100,3 +100,15 @@ document.getElementById('clear-votes').addEventListener('click', async () => {
 
     if (req.status == 200) loadCars(page);
 });
+
+document.getElementById('archive').addEventListener('click', async () => {
+    let selected = Array.from(document.querySelectorAll('#cars td input[type=checkbox]')).filter(box => box.checked).map(box => box.id);
+
+    let req = await fetch(`/api/cars/archive?ids=${selected.join(';')}`);
+    let res = await req.json();
+
+    msg.style.color = req.status == 200 ? 'white' : 'red';
+    msg.innerText = res.message;
+
+    if (req.status == 200) loadCars(page);
+});

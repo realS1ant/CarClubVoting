@@ -25,6 +25,10 @@ const carSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    archived: {
+        type: Boolean,
+        default: false
+    },
     created_at: {
         type: Date,
         default: Date.now
