@@ -22,6 +22,10 @@ admin.get('/cars', (req, res) => {
     res.render('admin/cars.ejs');
 });
 
+admin.get('/archive', (req, res) => {
+    res.render('admin/archive.ejs');
+});
+
 admin.get('/users', (req, res) => {
     res.render('admin/users.ejs');
 });

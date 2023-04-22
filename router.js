@@ -2,12 +2,12 @@ const express = require('express');
 const { isValidObjectId } = require('mongoose');
 const Car = require('./models/Car');
 const User = require('./models/User');
-const { ensureLoggedIn } = require('./utils');
+const { ensureLoggedIn, ensureAdmin } = require('./utils');
 const router = express.Router();
 const { getValue } = require('./config');
 
 const ensureVotingOpen = async (req, res, next) => {
-    if (getValue('voting')) next();
+    if (getValue('voting') || (req.isAuthenticated() && req.user.admin)) next();
     else {
         req.session.error = "Sorry, we aren't currently open for voting.";
         req.session.save();
@@ -87,6 +87,26 @@ router.get('/car/:query', ensureVotingOpen, async (req, res) => {
         res.render('car.ejs', { votedId, car: carobj, requireLogin, user: req.user });
     } else {
         res.render('car.ejs', { user: req.user, error: 'Can\'t find that car!', requireLogin });
+    }
+});
+
+router.get('/car/:query/edit', ensureAdmin, async (req, res) => {
+    const { query } = req.params;
+    if (!query) {
+        res.render('car.ejs', { error: 'Invalid URL.' });
+        return;
+    }
+    let car;
+    if (isValidObjectId(query)) {
+        car = await Car.findById(query);
+    } else {
+        car = await Car.findOne({ searchPhrase: query.toLowerCase() });
+    }
+
+    if (car) {
+        res.render('edit-car.ejs', { car: car.toObject() });
+    } else {
+        res.render('edit-car.ejs', { user: req.user, error: 'Can\'t find that car!', requireLogin });
     }
 });
 

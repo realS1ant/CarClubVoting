@@ -19,7 +19,7 @@ async function loadCars(page) {
     tablebody.innerHTML = '';
 
     let results = 15;
-    let req = await fetch(`/api/cars/cars?results=${results}&page=${page}`);
+    let req = await fetch(`/api/cars/cars?results=${results}&page=${page}&archive=true`);
     let { cars } = await req.json();
 
     hasNextPage = cars.length > 0;
@@ -108,10 +108,10 @@ document.getElementById('clear-votes').addEventListener('click', async () => {
     if (req.status == 200) loadCars(page);
 });
 
-document.getElementById('archive').addEventListener('click', async () => {
+document.getElementById('unarchive').addEventListener('click', async () => {
     let selected = Array.from(document.querySelectorAll('#cars td input[type=checkbox]')).filter(box => box.checked).map(box => box.id);
 
-    let req = await fetch(`/api/cars/archive?ids=${selected.join(';')}`);
+    let req = await fetch(`/api/cars/archive?ids=${selected.join(';')}&unarchive=true`);
     let res = await req.json();
 
     msg.style.color = req.status == 200 ? 'white' : 'red';

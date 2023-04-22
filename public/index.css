@@ -314,3 +314,16 @@ h2 {
 #config-values {
   margin-bottom: 1rem;
 }
+
+/* .action-btns {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 0 1rem;
+}
+
+.action-btns>.admin-btn {
+  margin: 1rem 0;
+  width: fit-content;
+  padding: 5px 1rem;
+  font-size: 1.35rem;
+} */

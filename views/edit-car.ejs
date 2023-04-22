@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="../../index.css">
+    <title>Car Editor</title>
+</head>
+
+<body>
+    <h1 class="header">SLUH Car Club</h1>
+    <% if (typeof error !='undefined' ) { %>
+        <h1 style='color: red; margin-top: 0.5rem;'>
+            <%= error %>
+        </h1>
+        <% } else {%>
+            <h3 style="font-weight: 700;" id="car-create-msg">Edit Car</h3>
+            <div class="registration" style="width:350px; margin: auto">
+                <input type="hidden" id="id-in" name="id" value="<%= car._id %>">
+                <input type="hidden" id="archived-in" name="archived" value="<%= car.archived %>">
+                <input type="text" name="owner" id="owner-in" value="<%= car.owner %>" />
+                <input type="number" name="year" id="year-in" value="<%= car.year %>" />
+                <input type="text" name="make" id="make-in" value="<%= car.make %>" />
+                <input type="text" name="model" id="model-in" value="<%= car.model %>" />
+                <input type="number" name="votes" id="votes-in" value="<%= car.votes %>" />
+                <div id="action-btns">
+                    <div class="icon-button admin-btn" id="car-update">
+                        <span>Update</span>
+                    </div>
+                    <br>
+                    <br>
+                    <% if (car.archived==true) { %>
+                        <div class="icon-button admin-btn" id="car-archive">
+                            <span>Un-Archive</span>
+                        </div>
+                        <% } else { %>
+                            <div class="icon-button admin-btn" id="car-archive">
+                                <span>Archive</span>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+            <script src="../../edit-car-script.js"></script>
+            <% } %>
+                <%- include('footer.ejs') %>
+</body>
+
+</html>

@@ -9,11 +9,12 @@
 <body>
     <h1 class="header">SLUH Car Club</h1>
     <div class="admin-content">
+        <h1>ARCHIVE</h1>
         <h1 style="margin-top: 0.5rem;" id="cars-msg"></h1>
         <div id="cars-btns">
             <button id="create-pdf">Create PDF</button>
             <button id="clear-votes">Clear Votes</button>
-            <button id="archive">Archive Car(s)</button>
+            <button id="unarchive">Un-Archive Car(s)</button>
             <div id="pagination-btns">
                 <button id="last-page">Last Page</button>
                 <span id="page-num"></span>
@@ -23,20 +24,20 @@
         <table id="cars">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="select-all"></th><!-- Checkbox  -->
-                    <th>Owner</th>
-                    <th>Make</th>
-                    <th>Model</th>
-                    <th>Year</th>
-                    <th>Registered</th>
-                    <th>Votes</th>
-                    <th>Action</th>
+                    <th style="background-color: red;"><input type="checkbox" id="select-all"></th><!-- Checkbox  -->
+                    <th style="background-color: red;">Owner</th>
+                    <th style="background-color: red;">Make</th>
+                    <th style="background-color: red;">Model</th>
+                    <th style="background-color: red;">Year</th>
+                    <th style="background-color: red;">Registered</th>
+                    <th style="background-color: red;">Votes</th>
+                    <th style="background-color: red;">Action</th>
                 </tr>
             </thead>
             <tbody id="table-body"></tbody>
         </table>
     </div>
-    <script src="../cars-script.js"></script>
+    <script src="../archive-script.js"></script>
 </body>
 
 </html>

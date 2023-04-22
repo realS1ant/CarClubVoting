@@ -105,14 +105,14 @@ router.get('/multipage', async (req, res) => {
         if (car == null) return;
 
         //async callback, inside of sync function, inside of for await of, hell.
-        await new Promise( async (resolve, reject) => {
+        await new Promise(async (resolve, reject) => {
             fs.stat(`./qrcodes/${car.id}.png`, async (err, stats) => {
-                if (err) {
+                if (err || stats.size == 0) {
                     //doesn't exist, create
                     await qrcode.toFile(`./qrcodes/${car.id}.png`, `${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${car.searchPhrase ? car.searchPhrase : car.id}`);
                 }
                 let isUnregistered = car.owner.toLowerCase().includes("unregistered");
-                if(!isUnregistered) {
+                if (!isUnregistered) {
                     pdf.fontSize(36).text(`${car.owner}'s`, pdf.x, pdf.y, {
                         align: 'center'
                     });
@@ -120,17 +120,17 @@ router.get('/multipage', async (req, res) => {
                         align: 'center'
                     });
                 }
-                
+
                 pdf.image(`qrcodes/${car.id}.png`, (pdf.page.width - 164) / 2, pdf.y, {
                     fit: [164, 164]
                 });
                 pdf.fontSize(8).text(`${process.env.HOSTNAME || 'https://sluhcarclub.com'}/car/${car.searchPhrase ? car.searchPhrase : car.id}`, pdf.x, pdf.y, {
                     align: 'center'
                 });
-                if(isUnregistered) {
+                if (isUnregistered) {
                     pdf.fontSize(8).text(car.owner, pdf.x, pdf.y, {
-                    align: 'center'
-                });
+                        align: 'center'
+                    });
                 }
                 if (cars.indexOf(car) != cars.length - 1) pdf.addPage();
                 resolve();
@@ -149,8 +149,10 @@ router.get('/cars', async (req, res) => {
 
     if (!results) results = 20;
     if (!page) page = 1;
-    
-    let cars = await Car.find({ archived: {$ne: true} }).sort({ created_at: -1 }).skip((page - 1) * results).limit(results).exec();
+
+    let filter = req.query['archive'] != undefined && req.query['archive'] ? { archived: true } : { archived: { $ne: true } };
+
+    let cars = await Car.find(filter).sort({ created_at: -1 }).skip((page - 1) * results).limit(results).exec();
     res.json({ cars, page });
 });
 
@@ -182,14 +184,16 @@ router.get('/archive', async (req, res) => {
         return;
     }
 
-    let carIds = await Promise.all(ids.split(';'));
+    let carIds = ids.includes(';') ? await Promise.all(ids.split(';')) : [ids];
 
     if (carIds.length == 0) {
         res.status(400).json({ message: 'No IDs specified.' })
         return;
     }
 
-    let query = await Car.updateMany({ '_id': { $in: carIds } }, { archived: true }).exec();
+    let set = req.query['unarchive'] != undefined && req.query['unarchive'] ? { archived: false } : { archived: true };
+
+    let query = await Car.updateMany({ '_id': { $in: carIds } }, set).exec();
 
     res.status(200).json({ message: `Archived all specified vehicles.` })
 });
@@ -291,7 +295,7 @@ router.put('/:query', async (req, res) => {
         }
 
         res.status(200).json({
-            success: true,
+            message: 'Successfully updated',
             car
         });
         return;
@@ -307,7 +311,7 @@ router.put('/:query', async (req, res) => {
         }
 
         res.status(200).json({
-            success: true,
+            message: 'Successfully updated',
             car
         });
         return;
