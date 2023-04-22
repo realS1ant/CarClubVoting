@@ -34,10 +34,8 @@ router.get('/', async (req, res) => {
     let vars = { registration, voting, requireLogin, votedId, admin };
 
     if (votedId != undefined) {
-        console.log(votedId)
         vars.car = await Car.findById(votedId);
     }
-    console.log(vars)
     res.render('index.ejs', vars);
 });
 
